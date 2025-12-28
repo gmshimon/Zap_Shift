@@ -33,7 +33,7 @@ const Navbar = () => {
         className="pointer-events-none absolute inset-x-6 top-2 h-16 rounded-full to-transparent md:inset-x-10"
         aria-hidden="true"
       />
-      <div className="mx-auto max-w-6xl pt-2">
+      <div className="mx-auto max-w-7xl pt-2">
         <div className="relative overflow-visible rounded-2xl border border-white/10 bg-white text-black  ">
           <div
             className="pointer-events-none absolute -left-16 -top-10 h-28 w-28 rounded-full blur-3xl"

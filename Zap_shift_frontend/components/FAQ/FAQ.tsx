@@ -70,7 +70,7 @@ const FAQ = () => {
           whileTap={{ scale: 0.95 }}
           className="bg-[#b6d35e] text-black px-6 py-2 rounded-2xl font-semibold flex items-center cursor-pointer"
         >
-          See More FAQ's
+          See More FAQ&apos;s
           <span className="ml-2 bg-black text-[#b6d35e] p-1 rounded-2xl">
             <ArrowUpRight />
           </span>

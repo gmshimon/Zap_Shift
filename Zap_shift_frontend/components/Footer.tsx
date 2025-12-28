@@ -21,7 +21,7 @@ const socials = [
 
 const Footer = () => {
   return (
-    <footer className="mt-16 px-4 ">
+    <footer className="mt-16 px-4 pb-6">
       <div className="mx-auto max-w-7xl rounded-3xl bg-[#070707] px-6 py-10 text-center text-white shadow-[0_16px_40px_rgba(0,0,0,0.35)] sm:px-10 sm:py-12">
         <div className="flex flex-col items-center gap-3">
           <Image
