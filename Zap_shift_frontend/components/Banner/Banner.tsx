@@ -31,31 +31,31 @@ const Banner = () => {
                 className="w-full  object-cover"
               />
               <div className="absolute bottom-10 left-10 flex gap-4">
-  <motion.button
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, ease: "easeOut" }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="bg-[#b6d35e] text-black px-6 py-2 rounded-2xl font-semibold flex items-center"
-  >
-    Track Your Parcel
-    <span className="ml-2 bg-black text-[#b6d35e] p-1 rounded-2xl">
-      <ArrowUpRight />
-    </span>
-  </motion.button>
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-[#b6d35e] text-black px-6 py-2 rounded-2xl font-semibold flex items-center"
+                >
+                  Track Your Parcel
+                  <span className="ml-2 bg-black text-[#b6d35e] p-1 rounded-2xl">
+                    <ArrowUpRight />
+                  </span>
+                </motion.button>
 
-  <motion.button
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="bg-black text-white px-6 py-2 rounded-md font-semibold"
-  >
-    Be A Rider
-  </motion.button>
-</div>
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-black text-white px-6 py-2 rounded-md font-semibold"
+                >
+                  Be A Rider
+                </motion.button>
+              </div>
             </div>
           </SwiperSlide>
         ))}
