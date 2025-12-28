@@ -123,3 +123,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+.satisfaction-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.35);
+  opacity: 1;
+  width: 10px;
+  height: 10px;
+  margin: 0 6px !important;
+}
+
+.satisfaction-swiper .swiper-pagination-bullet-active {
+  background: #b6d35e;
+  width: 24px;
+  border-radius: 999px;
+}
+
+.review-swiper .swiper-slide {
+  transition: opacity 0.35s ease, filter 0.35s ease, transform 0.35s ease;
+}
+
+.review-swiper .swiper-slide:not(.swiper-slide-active) {
+  opacity: 0.55;
+  filter: blur(1px) saturate(0.9);
+  transform: scale(0.94);
+}

@@ -2,17 +2,14 @@
 import { motion } from "framer-motion";
 import merchantIcon from "../../public/assets/location-merchant.png";
 import customerTopImage from "../../public/assets/customer-top.png";
-import reviewQuote from "../../public/assets/reviewQuote.png";
 import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Swiper, SwiperSlide } from "swiper/react";
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-coverflow";
+import "swiper/css/navigation";
 import "swiper/css/pagination";
-
-// import required modules
-import { EffectCoverflow, Pagination } from "swiper/modules";
+import { Autoplay, EffectCoverflow, Pagination } from "swiper/modules";
+import CustomerReviewCard from "../CustomerReviewCard/CustomerReviewCard";
 
 const container = {
   hidden: { opacity: 0, y: 24 },
@@ -135,135 +132,40 @@ const CustomerSatisfaction = () => {
           Pro. Achieve proper alignment, reduce pain, and strengthen your with
           easel
         </p>
-        <Swiper
-          effect={"coverflow"}
-          grabCursor={true}
-          centeredSlides={true}
-          slidesPerView={"auto"}
-          coverflowEffect={{
-            rotate: 50,
-            stretch: 0,
-            depth: 100,
-            modifier: 1,
-            slideShadows: true,
-          }}
-          pagination={true}
-          modules={[EffectCoverflow, Pagination]}
-          className="mySwiper "
-        >
-          <SwiperSlide>
-            <div className="w-[400px] bg-white px-8 py-8 rounded-3xl">
-              <div>
-                <Image src={reviewQuote} alt="review quote" />
-              </div>
-              <p className="text-justify text-sm mt-2">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit
-                similique repellendus ab suscipit excepturi animi maiores
-                dolores possimus quod voluptas, iusto sunt dolorem natus quos
-                harum
-              </p>
-              <div>
-                <div className="flex items-center gap-x-2  border-t-2 border-black border-dashed mt-4 pt-4">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <div className="">
-                    <h1 className="font-semibold">Awlad Hossain</h1>
-                    <p className="text-sm">Senior Product Designer</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="w-[400px] bg-white px-8 py-8 rounded-3xl">
-              <div>
-                <Image src={reviewQuote} alt="review quote" />
-              </div>
-              <p className="text-justify text-sm mt-2">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit
-                similique repellendus ab suscipit excepturi animi maiores
-                dolores possimus quod voluptas, iusto sunt dolorem natus quos
-                harum
-              </p>
-              <div>
-                <div className="flex items-center gap-x-2  border-t-2 border-black border-dashed mt-4 pt-4">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <div className="">
-                    <h1 className="font-semibold">Awlad Hossain</h1>
-                    <p className="text-sm">Senior Product Designer</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="w-[400px] bg-white px-8 py-8 rounded-3xl">
-              <div>
-                <Image src={reviewQuote} alt="review quote" />
-              </div>
-              <p className="text-justify text-sm mt-2">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit
-                similique repellendus ab suscipit excepturi animi maiores
-                dolores possimus quod voluptas, iusto sunt dolorem natus quos
-                harum
-              </p>
-              <div>
-                <div className="flex items-center gap-x-2  border-t-2 border-black border-dashed mt-4 pt-4">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <div className="">
-                    <h1 className="font-semibold">Awlad Hossain</h1>
-                    <p className="text-sm">Senior Product Designer</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="w-[400px] bg-white px-8 py-8 rounded-3xl">
-              <div>
-                <Image src={reviewQuote} alt="review quote" />
-              </div>
-              <p className="text-justify text-sm mt-2">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit
-                similique repellendus ab suscipit excepturi animi maiores
-                dolores possimus quod voluptas, iusto sunt dolorem natus quos
-                harum
-              </p>
-              <div>
-                <div className="flex items-center gap-x-2  border-t-2 border-black border-dashed mt-4 pt-4">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <div className="">
-                    <h1 className="font-semibold">Awlad Hossain</h1>
-                    <p className="text-sm">Senior Product Designer</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        </Swiper>
+        <div className="mt-6">
+          <Swiper
+            effect={"coverflow"}
+            grabCursor
+            centeredSlides
+            loop={false}
+            initialSlide={0}
+            slidesPerView={1.05}
+            spaceBetween={16}
+            coverflowEffect={{
+              rotate: 24,
+              stretch: -10,
+              depth: 180,
+              modifier: 1.1,
+              slideShadows: false,
+            }}
+            pagination={{ clickable: true }}
+            navigation
+            breakpoints={{
+              640: { slidesPerView: 1.4, spaceBetween: 18 },
+              768: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 2.6, spaceBetween: 22 },
+              1280: { slidesPerView: 3.1, spaceBetween: 24 },
+            }}
+            modules={[EffectCoverflow, Pagination, Autoplay]}
+            className="satisfaction-swiper review-swiper"
+          >
+            {[0, 1, 2, 3].map((key) => (
+              <SwiperSlide key={key} className="flex h-auto justify-center">
+                <CustomerReviewCard />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
       </section>
     </section>
   );
