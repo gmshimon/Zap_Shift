@@ -5,6 +5,7 @@ import tiny_deliveryman from "../../public/assets/tiny-deliveryman.png";
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import TopAgents from "@/components/TopAgents";
+import Link from "next/link";
 const page = () => {
   return (
     <section>
@@ -20,19 +21,22 @@ const page = () => {
           hassle. From personal packages to business shipments — we deliver on
           time, every time.
         </p>
+        <Link href={"/be-a-rider-form"}>
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="mt-6 flex items-center rounded-2xl bg-[#b6d35e] px-6 py-3 text-base font-semibold text-black"
+          className="mt-6 flex items-center rounded-2xl bg-[#b6d35e] px-6 py-3 text-base font-semibold text-black cursor-pointer"
         >
           Be a Rider
           <span className="ml-2 rounded-2xl bg-black p-1 text-[#b6d35e]">
             <ArrowUpRight />
           </span>
         </motion.button>
+        </Link>
+        
       </div>
 
       <div>
