@@ -1,6 +1,7 @@
 import Banner from "@/components/Banner/Banner";
 import CustomerSatisfaction from "@/components/CustomerSatisfaction/CustomerSatisfaction";
 import FAQ from "@/components/FAQ/FAQ";
+import Footer from "@/components/Footer";
 import OurServices from "@/components/OurServices/OurServices";
 import OurSupport from "@/components/OurSupport/OurSupport";
 import Image from "next/image";
@@ -14,6 +15,7 @@ export default function Home() {
         <OurSupport/>
         <CustomerSatisfaction/>
         <FAQ/>
+        <Footer/>
       </div>
     </div>
   );
