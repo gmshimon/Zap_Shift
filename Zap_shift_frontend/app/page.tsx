@@ -1,4 +1,5 @@
 import Banner from "@/components/Banner/Banner";
+import CustomerSatisfaction from "@/components/CustomerSatisfaction/CustomerSatisfaction";
 import OurServices from "@/components/OurServices/OurServices";
 import OurSupport from "@/components/OurSupport/OurSupport";
 import Image from "next/image";
@@ -10,6 +11,7 @@ export default function Home() {
         <Banner/>
         <OurServices/>
         <OurSupport/>
+        <CustomerSatisfaction/>
       </div>
     </div>
   );
