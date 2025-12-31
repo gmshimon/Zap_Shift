@@ -6,7 +6,7 @@ import logo from "../public/assets/logo.png";
 const navItems = [
   { label: "Services", href: "#" },
   { label: "Coverage", href: "#" },
-  { label: "About Us", href: "#" },
+  { label: "About Us", href: "/about-us" },
   { label: "Pricing", href: "#" },
   { label: "Blog", href: "#" },
   { label: "Contact", href: "#" },
