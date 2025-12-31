@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
@@ -183,15 +183,15 @@ const Page = () => {
                 />
               </div>
               <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="mt-6 rounded-2xl bg-[#b6d35e] px-6 py-3 text-base font-semibold text-black cursor-pointer text-center"
-        >
-          Be a Rider
-        </motion.button>
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="mt-6 rounded-2xl bg-[#b6d35e] px-6 py-3 text-base font-semibold text-black cursor-pointer text-center"
+              >
+                Be a Rider
+              </motion.button>
             </form>
           </div>
         </div>
