@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import agent_pending from "../../public/assets/agent-pending.png";
+import agent_pending from "../../../public/assets/agent-pending.png";
 import Image from "next/image";
 
 const fieldClass =

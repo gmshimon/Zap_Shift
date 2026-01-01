@@ -7,7 +7,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { SearchIcon } from "lucide-react";
-import warehouses from "../../public/assets/warehouses.json";
+import warehouses from "../../../public/assets/warehouses.json";
 import { Button } from "@/components/ui/button";
 
 type Warehouse = {

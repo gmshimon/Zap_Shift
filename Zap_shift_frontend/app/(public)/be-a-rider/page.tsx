@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import tiny_deliveryman from "../../public/assets/tiny-deliveryman.png";
+import tiny_deliveryman from "../../../public/assets/tiny-deliveryman.png";
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import TopAgents from "@/components/TopAgents";
