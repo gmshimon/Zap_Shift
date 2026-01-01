@@ -11,7 +11,8 @@ const navLinks = [
   { label: "Coverage", href: "/doctors" },
   { label: "About Us", href: "/about-us" },
   { label: "Pricing", href: "/appointment" },
-  { label: "Be a Rider", href: "#contact", isHash: true },
+  { label: "Track Order", href: "/track-your-consignment" },
+  { label: "Be a Rider", href: "/be-a-rider" },
 ];
 
 const Navbar = () => {
