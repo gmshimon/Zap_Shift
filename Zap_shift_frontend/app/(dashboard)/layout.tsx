@@ -1,10 +1,6 @@
-import AppSidebar from "@/components/AppSidebar/AppSidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { Menu, TextAlignStart } from "lucide-react";
+import { AppSidebar } from "@/components/app-sidebar"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { TextAlignStart } from "lucide-react"
 export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
