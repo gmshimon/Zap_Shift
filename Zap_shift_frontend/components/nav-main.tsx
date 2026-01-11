@@ -39,7 +39,7 @@ export function NavMain({
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="sr-only">Main navigation</SidebarGroupLabel>
-      <SidebarMenu className="space-y-2 px-4 mt-2">
+      <SidebarMenu className="space-y-2  mt-3">
         {items.map((item) => {
           const hasChildren = Boolean(item.items?.length);
           const isActive =
