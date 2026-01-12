@@ -21,7 +21,6 @@ import {
 
 import { CalendarDays, SquarePen, Trash } from "lucide-react";
 
-import { MoreVertical, PencilLine } from "lucide-react";
 
 const shipments = [
   {
@@ -94,7 +93,7 @@ const ShippingReports = () => {
   return (
     <Card>
       <CardHeader className="flex items-center justify-between">
-        <CardTitle>Overall Statistics</CardTitle>
+        <CardTitle>Shipping Reports</CardTitle>
         <div>
           <Select defaultValue="this-week">
             <SelectTrigger className="w-50">

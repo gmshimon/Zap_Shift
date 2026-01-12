@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { AreaGraphChart } from "../AreaGraphChart/AreaGraphChart";
+import InvoicesTable from "../InvoicesTable/InvoicesTable";
+import ShipmentAlert from "../ShipmentAlert/ShipmentAlert";
 import ShippingReports from "../ShippingReports/ShippingReports";
 import { Button } from "../ui/button";
 import { Package, PackageCheck, PlaneTakeoff, Plus, Ship, Van } from "lucide-react";
@@ -41,10 +44,14 @@ const UserDashboard = () => {
             You can access all your data and information from anywhere
           </p>
         </div>
+        <Link href="/dashboard/add-parcel">
+
+
         <Button className="bg-[#b6d35e] hover:bg-[#b6d35e] text-black px-6 py-2 rounded-xl font-semibold flex items-center cursor-pointer">
           <Plus />
           Add Parcel
         </Button>
+        </Link>
       </div>
 
         {/* Additional dashboard content can be added here */}
@@ -66,10 +73,16 @@ const UserDashboard = () => {
         </div>
 
         {/* Shipping reports section to be added here */}
-
         <div className="mt-6">
             <ShippingReports />
         </div>
+        
+        {/* Additional dashboard content can be added here */}
+        <div className="mt-6 flex flex-col lg:flex-row gap-6 w-full">
+            <InvoicesTable/>
+            <ShipmentAlert />
+        </div>
+
     </div>
   );
 };

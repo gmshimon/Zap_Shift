@@ -23,7 +23,7 @@ import bandLogo from "../public/assets/logo.png";
 const menuItems = [
   {
     title: "Dashboard",
-    url: "/user",
+    url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
