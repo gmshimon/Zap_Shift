@@ -28,7 +28,7 @@ const menuItems = [
   },
   {
     title: "Deliveries",
-    url: "/user/deliveries",
+    url: "/dashboard/all-deliveries",
     icon: Truck,
   },
   {

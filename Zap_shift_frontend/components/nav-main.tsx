@@ -35,13 +35,14 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname();
-
+console.log("Current pathname:", items);
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="sr-only">Main navigation</SidebarGroupLabel>
       <SidebarMenu className="space-y-2  mt-3">
         {items.map((item) => {
           const hasChildren = Boolean(item.items?.length);
+          // TODO: improve active state logic
           const isActive =
             item.isActive ??
             (pathname === item.url || pathname?.startsWith(`${item.url}/`));
