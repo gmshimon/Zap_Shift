@@ -1,5 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArchiveX, CornerDownLeft, PlaneTakeoff, Ship, SquarePen, Trash, Van, Wallet } from "lucide-react";
+import {
+  ArchiveX,
+  CornerDownLeft,
+  Wallet,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -8,24 +12,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React from "react";
+
 const data = [
-    {
-        title: "Total",
-        amount: 129,
-        icon:<Wallet size={24}/>
-    },
-    {
-        title:"Return",
-        amount: 1325,
-        icon:<CornerDownLeft size={24} />
-    },
-    {
-        title:"Paid Return",
-        amount: 532,
-        icon:<ArchiveX size={24} />
-    }
-]
+  {
+    title: "Total",
+    amount: 129,
+    icon: <Wallet size={24} />,
+  },
+  {
+    title: "Return",
+    amount: 1325,
+    icon: <CornerDownLeft size={24} />,
+  },
+  {
+    title: "Paid Return",
+    amount: 532,
+    icon: <ArchiveX size={24} />,
+  },
+];
 
 const deliveries = [
   {
@@ -120,19 +124,23 @@ const page = () => {
       <CardHeader className="flex items-center justify-between">
         <CardTitle className="text-3xl">All Deliveries</CardTitle>
       </CardHeader>
-      
 
-         <CardContent className="p-x-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 w-3/4 gap-6 mb-6">
-            {data.map((item)=>(
-                <div key={item.title} className="bg-[#ffefef91] rounded-xl p-6 flex">
-                    <div className="text-black mb-4 bg-[#ffefef91] p-4 border border-[#F5F5F78] rounded-full">{item.icon}</div>
-                    <div className="flex flex-col justify-center ml-6">
-                        <h2 className="text-md font-medium">{item.title}</h2>
-                        <p className="text-3xl font-bold mt-2">{item.amount}</p>
-                    </div>
-                </div>
-            ))}
+      <CardContent className="p-x-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 w-3/4 gap-6 mb-6">
+          {data.map((item) => (
+            <div
+              key={item.title}
+              className="bg-[#ffefef91] rounded-xl p-6 flex"
+            >
+              <div className="text-black mb-4 bg-[#ffefef91] p-4 border border-[#F5F5F78] rounded-full">
+                {item.icon}
+              </div>
+              <div className="flex flex-col justify-center ml-6">
+                <h2 className="text-md font-medium">{item.title}</h2>
+                <p className="text-3xl font-bold mt-2">{item.amount}</p>
+              </div>
+            </div>
+          ))}
         </div>
         <div className="overflow-hidden rounded-xl border border-slate-200">
           <Table className="text-sm">
@@ -181,7 +189,9 @@ const page = () => {
                   </TableCell>
                   <TableCell className="px-4 py-3 text-slate-700">
                     <div className="space-y-1">
-                      <p className="font-semibold text-slate-800">{item.recipientName}</p>
+                      <p className="font-semibold text-slate-800">
+                        {item.recipientName}
+                      </p>
                       <p className="whitespace-pre-line text-slate-600 text-xs leading-tight">
                         {item.recipientAddress}
                         {item.recipientPhone ? `\n${item.recipientPhone}` : ""}
@@ -189,7 +199,9 @@ const page = () => {
                     </div>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-slate-700">
-                    <span className={`font-semibold ${item.deliveryStatusTone}`}>
+                    <span
+                      className={`font-semibold ${item.deliveryStatusTone}`}
+                    >
                       {item.deliveryStatus}
                     </span>
                   </TableCell>
@@ -201,7 +213,9 @@ const page = () => {
                     </div>
                   </TableCell>
                   <TableCell className="px-4 py-3">
-                    <span className={`text-sm font-semibold ${item.paymentTone}`}>
+                    <span
+                      className={`text-sm font-semibold ${item.paymentTone}`}
+                    >
                       {item.payment}
                     </span>
                   </TableCell>

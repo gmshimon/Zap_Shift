@@ -3,23 +3,30 @@
 import * as React from "react";
 import type { CSSProperties } from "react";
 import {
+  ChevronUp,
   FileText,
   LayoutDashboard,
   MapPin,
   Store,
   Tag,
   Truck,
+  User2,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import bandLogo from "../public/assets/logo.png";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 const menuItems = [
   {
     title: "Dashboard",
@@ -33,7 +40,7 @@ const menuItems = [
   },
   {
     title: "Invoices",
-    url: "/user/invoices",
+    url: "/dashboard/invoices",
     icon: FileText,
   },
   {
@@ -73,6 +80,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={menuItems} />
       </SidebarContent>
       <SidebarRail />
+      <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton>
+                    <User2 /> Username
+                    <ChevronUp className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  className="w-[--radix-popper-anchor-width]"
+                >
+                  <DropdownMenuItem>
+                    <span>Account</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <span>Billing</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
     </Sidebar>
   );
 }
