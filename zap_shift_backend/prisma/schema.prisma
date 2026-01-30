@@ -1,0 +1,264 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+  RIDER
+}
+
+enum RiderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum Parcel_type {
+  DOCUMENT
+  NON_DOCUMENT
+}
+
+enum ParcelStatus {
+  UNPAID
+  PAID
+  READY_TO_PICKUP
+  IN_TRANSIT
+  REACHED_SERVICE_CENTER
+  SHIPPED
+  READY_FOR_DELIVERY
+  DELIVERED
+}
+
+enum PaymentMethod {
+  CARD
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum ActorRole {
+  USER
+  ADMIN
+  RIDER
+  SYSTEM
+}
+
+/**
+ * -------------------- MODELS --------------------
+ */
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  name     String
+  phone    String?
+  photoUrl String?
+  password String
+  role     Role    @default(USER)
+  isActive Boolean @default(true)
+
+  riderProfile RiderProfile?
+
+  // parcels created by this user (sender)
+  sentParcels    Parcel[]        @relation("SenderParcels")
+  payments       Payment[]
+  trackingEvents TrackingEvent[] @relation("ActorUserEvents")
+  reviews        Review[]
+
+  // rider assignments (when role is RIDER)
+  pickupTasks   Parcel[] @relation("PickupRider")
+  deliveryTasks Parcel[] @relation("DeliveryRider")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email, role, isActive, name])
+}
+
+model RiderProfile {
+  id     Int         @id @default(autoincrement())
+  status RiderStatus @default(PENDING)
+
+  serviceCenterId Int?
+  earningTotal    Float @default(0)
+
+  approvedAt DateTime?
+  rejectedAt DateTime?
+
+  userId        Int            @unique
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceCenter ServiceCenter? @relation(fields: [serviceCenterId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([serviceCenterId])
+}
+
+model Region {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  serviceCenters ServiceCenter[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model ServiceCenter {
+  id       Int     @id @default(autoincrement())
+  name     String
+  address  String?
+  regionId Int
+  region   Region  @relation(fields: [regionId], references: [id])
+
+  riders         RiderProfile[]
+  // tracking events
+  trackingEvents TrackingEvent[]
+  // optional geo
+  latitude       Float?
+  longitude      Float?
+
+  // relations to parcels
+  pickupParcels   Parcel[] @relation("PickupServiceCenter")
+  deliveryParcels Parcel[] @relation("DeliveryServiceCenter")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, regionId])
+  @@index([regionId])
+}
+
+model Parcel {
+  id       Int          @id @default(autoincrement())
+  title    String
+  type     Parcel_type  @default(NON_DOCUMENT)
+  weightKg Float
+  cost     Float
+  status   ParcelStatus @default(UNPAID)
+
+  // sender(user + snapshot fields)
+
+  senderUserId      Int
+  senderName        String
+  senderPhone       String
+  pickupRegionId    String
+  pickupCenterId    Int
+  pickupAddress     String
+  pickupInstruction String?
+
+  // Receiver (snapshot fields)
+  receiverName        String
+  receiverPhone       String
+  deliveryRegionId    String
+  deliveryCenterId    Int
+  deliveryAddress     String
+  deliveryInstruction String?
+
+  // Rider assignment
+  pickupRiderUserId   Int?
+  deliveryRiderUserId Int?
+
+  // Tracking no assigned on successful payment
+  trackingNo String? @unique
+
+  // Timestamps
+  paidAt      DateTime?
+  deliveredAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  sender User @relation("SenderParcels", fields: [senderUserId], references: [id])
+
+  pickupServiceCenter   ServiceCenter @relation("PickupServiceCenter", fields: [pickupCenterId], references: [id])
+  deliveryServiceCenter ServiceCenter @relation("DeliveryServiceCenter", fields: [deliveryCenterId], references: [id])
+
+  pickupRider   User? @relation("PickupRider", fields: [pickupRiderUserId], references: [id])
+  deliveryRider User? @relation("DeliveryRider", fields: [deliveryRiderUserId], references: [id])
+
+  payment        Payment?
+  trackingEvents TrackingEvent[]
+  review         Review?
+
+  @@index([senderUserId, status])
+  @@index([senderPhone])
+  @@index([pickupCenterId])
+  @@index([deliveryCenterId])
+  @@index([pickupRiderUserId, status])
+  @@index([deliveryRiderUserId, status])
+}
+
+model TrackingEvent {
+  id         Int          @id @default(autoincrement())
+  parcelId   Int
+  trackingNo String?
+  status     ParcelStatus
+  message    String
+
+  actorRole       ActorRole
+  actorUserId     Int?
+  serviceCenterId Int?
+
+  createdAt DateTime @default(now())
+
+  parcel        Parcel         @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  actorUser     User?          @relation("ActorUserEvents", fields: [actorUserId], references: [id])
+  serviceCenter ServiceCenter? @relation(fields: [serviceCenterId], references: [id])
+
+  @@index([parcelId, createdAt])
+  @@index([trackingNo])
+  @@index([serviceCenterId])
+  @@index([actorUserId])
+}
+
+model Payment {
+  id            Int           @id @default(autoincrement())
+  parcelId      Int           @unique
+  userId        Int
+  amount        Int
+  currency      String        @default("BDT")
+  method        PaymentMethod @default(CARD)
+  provider      String // e.g. "stripe", "sslcommerz"
+  transactionId String?       @unique
+  status        PaymentStatus @default(SUCCESS)
+
+  createdAt DateTime @default(now())
+
+  parcel Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model Review {
+  id       Int     @id @default(autoincrement())
+  parcelId Int     @unique
+  userId   Int
+  rating   Int
+  comment  String?
+
+  createdAt DateTime @default(now())
+
+  parcel Parcel @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
