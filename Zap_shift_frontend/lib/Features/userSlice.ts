@@ -8,7 +8,7 @@ const initialState = {
   isLoginError: false,
   isLoginSuccess: false,
 
-  isFetchingUserData: false,
+  isFetchUserDataLoading: false,
   isFetchUserDataError: false,
   isFetchUserDataSuccess: false,
 
@@ -22,7 +22,7 @@ export const loginUser = createAsyncThunk(
   async (credentials: { email: string; password: string }, thunkAPI) => {
     try {
       const response = await axios.post('/user/login', credentials)
-      const { token } = response.data
+      const { token } = response.data.data
 
       if (token && typeof window !== 'undefined') {
         localStorage.setItem(
@@ -30,8 +30,20 @@ export const loginUser = createAsyncThunk(
           JSON.stringify({ access_token: token })
         )
       }
-    } catch (error) {
+    } catch (error:any) {
       return thunkAPI.rejectWithValue(error.message)
+    }
+  }
+)
+
+export const fetchUserData = createAsyncThunk(
+  'user/fetchUserData',
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosSecure.get('/user/me')
+      return response.data.data
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error?.message ?? String(error))
     }
   }
 )
@@ -45,13 +57,16 @@ const userSlice = createSlice({
       state.isLoginError = false
       state.isLoginSuccess = false
 
-      state.isFetchingUserData = false
+      state.isFetchUserDataLoading = false
       state.isFetchUserDataError = false
       state.isFetchUserDataSuccess = false
 
       state.isCreateUserLoading = false
       state.isCreateUserError = false
       state.isCreateUserSuccess = false
+    },
+    logout: () => {
+      return { ...initialState }
     }
   },
   extraReducers: builder => {
@@ -66,17 +81,30 @@ const userSlice = createSlice({
         state.isLoginError = false
         state.isLoginSuccess = true
       })
-      .addCase(loginUser.rejected, (state) => {
+      .addCase(loginUser.rejected, state => {
         state.isLoginLoading = false
         state.isLoginError = true
         state.isLoginSuccess = false
       })
+      .addCase(fetchUserData.pending, state => {
+        state.isFetchUserDataLoading = true
+        state.isFetchUserDataError = false
+        state.isFetchUserDataSuccess = false
+      })
+      .addCase(fetchUserData.fulfilled, (state, action) => {
+        state.isFetchUserDataLoading = false
+        state.isFetchUserDataError = false
+        state.isFetchUserDataSuccess = true
+        state.user = action.payload
+      })
+      .addCase(fetchUserData.rejected, state => {
+        state.isFetchUserDataLoading = false
+        state.isFetchUserDataError = true
+        state.isFetchUserDataSuccess = false
+      })
   }
 })
 
-
-export const {
-    userSliceReset,
-} = userSlice.actions
+export const { userSliceReset, logout } = userSlice.actions
 
 export default userSlice.reducer

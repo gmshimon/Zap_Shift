@@ -2,6 +2,7 @@
 import Banner from "@/components/Banner/Banner";
 import CustomerSatisfaction from "@/components/CustomerSatisfaction/CustomerSatisfaction";
 import FAQ from "@/components/FAQ/FAQ";
+import Loading from "@/components/Loading/Loading";
 import OurServices from "@/components/OurServices/OurServices";
 import OurSupport from "@/components/OurSupport/OurSupport";
 import { userSliceReset } from "@/lib/Features/userSlice";
@@ -12,9 +13,9 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 export default function Home() {
-  const { isLoginLoading, isLoginError, isLoginSuccess } = useSelector(
-    (state) => state.user,
-  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { isLoginSuccess,isFetchUserDataLoading } = useSelector((state: any) => state.user);
+
   const dispatch = useDispatch();
   useEffect(() => {
     if (isLoginSuccess) {
@@ -22,6 +23,14 @@ export default function Home() {
       dispatch(userSliceReset());
     }
   }, [dispatch, isLoginSuccess]);
+
+  if(isFetchUserDataLoading){
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loading/>
+      </div>
+    );
+  }
   return (
     <div className="">
       <ToastContainer/>
