@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import brand from "../../../public/assets/brand.png";
 import authImage from "../../../public/assets/authImage.png";
@@ -6,11 +7,54 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "@/components/Loading/Loading";
+import { showErrorToast } from "@/utils/toastUtils";
+import { loginUser, userSliceReset } from "@/lib/Features/userSlice";
+import { useRouter } from "next/navigation";
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 const Page = () => {
+  const { isLoginLoading, isLoginError, isLoginSuccess } = useSelector(
+    (state) => state.user,
+  );
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isLoginError) {
+      showErrorToast("Login failed. Please check your credentials.");
+      dispatch(userSliceReset());
+    }
+    if (isLoginSuccess) {
+      router.push("/");
+    }
+  }, [dispatch, isLoginError, isLoginSuccess, router]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle login logic here
+    const data = { email, password };
+    dispatch(loginUser(data));
+    console.log("Login data:", data);
+  };
+
+  if (isLoginLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-[#f3ffe0] via-white to-[#cdeaa3] text-slate-900">
-      
+      <ToastContainer/>
       <Image
         className="absolute left-6 top-6 w-28 drop-shadow-sm"
         alt="brand logo"
@@ -45,6 +89,7 @@ const Page = () => {
                     type="email"
                     id="email"
                     placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -56,6 +101,7 @@ const Page = () => {
                     type="password"
                     id="password"
                     placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               </div>
@@ -65,24 +111,26 @@ const Page = () => {
                   Secure login to manage your shifts.
                 </span>
                 <Link href="/forget-password">
-                
-                <button className="font-semibold text-lime-700 underline decoration-lime-400 underline-offset-4 transition hover:text-slate-900 cursor-pointer">
-                  Forget Password?
-                </button>
+                  <button className="font-semibold text-lime-700 underline decoration-lime-400 underline-offset-4 transition hover:text-slate-900 cursor-pointer">
+                    Forget Password?
+                  </button>
                 </Link>
               </div>
 
-              <Button className="h-11 w-full rounded-xl bg-[#CBEB66] text-slate-900 shadow-[0_16px_40px_-18px_rgba(132,204,22,0.65)] transition hover:-translate-y-0.5 hover:bg-[#c4e558]">
+              <Button
+                onClick={handleLogin}
+                className="h-11 w-full rounded-xl bg-[#CBEB66] text-slate-900 shadow-[0_16px_40px_-18px_rgba(132,204,22,0.65)] transition hover:-translate-y-0.5 hover:bg-[#c4e558]"
+              >
                 Login
               </Button>
 
-              <Link href='/registration'>
+              <Link href="/registration">
                 <p className="text-sm text-slate-700">
-                Don&apos;t have any account?{" "}
-                <button className="font-semibold text-lime-800 underline decoration-lime-400 underline-offset-4 transition hover:text-slate-900 cursor-pointer">
-                  Register
-                </button>
-              </p>
+                  Don&apos;t have any account?{" "}
+                  <button className="font-semibold text-lime-800 underline decoration-lime-400 underline-offset-4 transition hover:text-slate-900 cursor-pointer">
+                    Register
+                  </button>
+                </p>
               </Link>
             </div>
           </div>

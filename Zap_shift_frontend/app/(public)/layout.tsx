@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
-import { Providers } from "../providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "ZapShift",
@@ -25,16 +13,10 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#EAECEE]  min-h-screen `}
-      >
-        <Providers>
-          <Navbar />
-          <div className="pt-30 max-w-7xl mx-auto">{children}</div>
-          <Footer />
-        </Providers>
-      </body>
-    </html>
+    <>
+      <Navbar />
+      <div className="pt-30 max-w-7xl mx-auto">{children}</div>
+      <Footer />
+    </>
   );
 }
