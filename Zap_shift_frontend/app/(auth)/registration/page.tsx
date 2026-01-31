@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 import Image from "next/image";
 import brand from "../../../public/assets/brand.png";
 import authImage from "../../../public/assets/authImage.png";
@@ -6,10 +6,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-const registration = () => {
-    return (
-        <section className="relative min-h-screen bg-gradient-to-br from-[#f3ffe0] via-white to-[#cdeaa3] text-slate-900">
-      
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { showErrorToast, showSuccessToast } from "@/utils/toastUtils";
+import { createUser, userSliceReset } from "@/lib/Features/userSlice";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
+const Page = () => {
+  const { isCreateUserLoading, isCreateUserError, isCreateUserSuccess } =
+    useSelector((state) => state.user);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    if( isCreateUserSuccess ){
+      showSuccessToast("Registration successful! Please login.");
+      dispatch(userSliceReset());
+    }
+    if( isCreateUserError ){
+      showErrorToast("Registration failed. Please try again.");
+      dispatch(userSliceReset());
+    }
+  },[dispatch, isCreateUserError, isCreateUserSuccess])
+
+
+  const handleRegister = async () => {
+    // Registration logic goes here
+    console.log("Registering user:", { name, email, password });
+    dispatch(createUser({ name, email, password }));
+  };
+
+  return (
+    <section className="relative min-h-screen bg-gradient-to-br from-[#f3ffe0] via-white to-[#cdeaa3] text-slate-900">
+       <ToastContainer/>
       <Image
         className="absolute left-6 top-6 w-28 drop-shadow-sm"
         alt="brand logo"
@@ -44,6 +76,7 @@ const registration = () => {
                     type="name"
                     id="name"
                     placeholder="Name"
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -55,6 +88,7 @@ const registration = () => {
                     type="email"
                     id="email"
                     placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -66,21 +100,33 @@ const registration = () => {
                     type="password"
                     id="password"
                     placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               </div>
 
-              <Button className="h-11 w-full rounded-xl bg-[#CBEB66] text-slate-900 shadow-[0_16px_40px_-18px_rgba(132,204,22,0.65)] transition hover:-translate-y-0.5 hover:bg-[#c4e558]">
-                Register
+              <Button
+                onClick={handleRegister}
+                disabled={isCreateUserLoading}
+                className="h-11 w-full rounded-xl bg-[#CBEB66] text-slate-900 shadow-[0_16px_40px_-18px_rgba(132,204,22,0.65)] transition hover:-translate-y-0.5 hover:bg-[#c4e558]"
+              >
+                {isCreateUserLoading ? (
+                  <span className="flex items-center justify-center">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-lime-800 mr-2"></span>
+                    Registering...
+                  </span>
+                ) : (
+                  "Register"
+                )}
               </Button>
 
-         <Link href='/login'>
-              <p className="text-sm text-slate-700">
-               Already have an account?{" "}
-                <button  className="font-semibold text-lime-800 underline decoration-lime-400 underline-offset-4 transition hover:text-slate-900 cursor-pointer">
-                  Login
-                </button>
-              </p>
+              <Link href="/login">
+                <p className="text-sm text-slate-700">
+                  Already have an account?{" "}
+                  <button className="font-semibold text-lime-800 underline decoration-lime-400 underline-offset-4 transition hover:text-slate-900 cursor-pointer">
+                    Login
+                  </button>
+                </p>
               </Link>
             </div>
           </div>
@@ -99,7 +145,7 @@ const registration = () => {
         </div>
       </div>
     </section>
-    );
+  );
 };
 
-export default registration;
+export default Page;

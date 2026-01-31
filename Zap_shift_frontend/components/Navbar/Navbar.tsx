@@ -112,7 +112,7 @@ const Navbar = () => {
 
             <div className="hidden flex-1 items-center justify-center gap-8 md:flex">
               {navLinks.map((link) => {
-                const isActive = !link.isHash && pathname === link.href;
+                const isActive = pathname === link.href;
                 return (
                   <Link
                     key={link.href}
@@ -253,7 +253,7 @@ const Navbar = () => {
             <div className="relative border-t border-white/10 px-4 pb-4 pt-3 md:hidden">
               <div className="flex flex-col gap-3">
                 {navLinks.map((link) => {
-                  const isActive = !link.isHash && pathname === link.href;
+                  const isActive = pathname === link.href;
                   return (
                     <Link
                       key={link.href}

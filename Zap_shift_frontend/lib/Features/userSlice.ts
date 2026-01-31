@@ -17,6 +17,22 @@ const initialState = {
   isCreateUserSuccess: false
 }
 
+export const createUser = createAsyncThunk(
+  'user/createUser',
+  async (
+    userDetails: { name: string; email: string; password: string },
+    thunkAPI
+  ) => {
+    try {
+      const response = await axios.post('/user/signup', userDetails)
+      return response.data.data
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message)
+    }
+  }
+)
+
+
 export const loginUser = createAsyncThunk(
   'user/loginUser',
   async (credentials: { email: string; password: string }, thunkAPI) => {
@@ -71,6 +87,21 @@ const userSlice = createSlice({
   },
   extraReducers: builder => {
     builder
+    .addCase(createUser.pending, state => {
+        state.isCreateUserLoading = true
+        state.isCreateUserError = false
+        state.isCreateUserSuccess = false
+      })
+      .addCase(createUser.fulfilled, state => {
+        state.isCreateUserLoading = false
+        state.isCreateUserError = false
+        state.isCreateUserSuccess = true
+      })
+      .addCase(createUser.rejected, state => {
+        state.isCreateUserLoading = false
+        state.isCreateUserError = true
+        state.isCreateUserSuccess = false
+      })
       .addCase(loginUser.pending, state => {
         state.isLoginLoading = true
         state.isLoginError = false
