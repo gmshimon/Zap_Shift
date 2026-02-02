@@ -76,8 +76,10 @@ export class UserController {
 
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
-  async getCurrentUser(  @Req() request: Request,
-    @Res() response: Response,): Promise<any> {
+  async getCurrentUser(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<any> {
     try {
       const user = (request as Request & { user?: User }).user;
       if (!user) {
