@@ -8,6 +8,9 @@ import {
   Get,
   NotFoundException,
   UseGuards,
+  Put,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterDto } from './dto/register.dto';
@@ -15,6 +18,8 @@ import { response, type Request, type Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { User } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
+import { multerOptions } from 'src/upload/multer-options';
+import { FileInterceptor } from '@nestjs/platform-express';
 type AuthenticatedUser = {
   id: number;
   email: string;
@@ -74,7 +79,7 @@ export class UserController {
     }
   }
 
-  @Get('me')
+  @Get('/me')
   @UseGuards(AuthGuard('jwt'))
   async getCurrentUser(
     @Req() request: Request,
@@ -94,6 +99,40 @@ export class UserController {
     } catch (error) {
       console.log(error);
       response.status(500).json({
+        status: 'Error!',
+        message: 'Internal Server Error!',
+      });
+    }
+  }
+
+  @Put('/update-image')
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+
+  async updateUserImage(
+    @Req() request: Request,
+    @Res() response: Response,
+    @UploadedFile() file,
+  ): Promise<any> {
+    try {
+      const user = (request as Request & { user?: User }).user;
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const result = await this.userService.updateUserImage(
+        user.id, file,
+      );
+
+      return response.status(200).json({
+        message: 'User image updated successfully',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: result,
+      });
+    } catch (error) {
+      console.log(error);
+      return response.status(500).json({
         status: 'Error!',
         message: 'Internal Server Error!',
       });

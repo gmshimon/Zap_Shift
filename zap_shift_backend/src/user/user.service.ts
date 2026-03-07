@@ -7,12 +7,14 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async register(registerData: RegisterDto): Promise<any> {
@@ -79,6 +81,8 @@ export class UserService {
         id: true,
         name: true,
         email: true,
+        phone: true,
+        photoUrl: true,
         role: true,
         createdAt: true,
         updatedAt: true,
@@ -89,6 +93,39 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
+    return user;
+  }
+
+  async updateUserImage(
+    userId: number,
+    file: Express.Multer.File,
+  ): Promise<any> {
+    const isUserExist = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!isUserExist) {
+      throw new NotFoundException('User not found');
+    }
+    if (isUserExist.photoUrl) {
+      await this.cloudinaryService.deleteImage(isUserExist.photoUrl);
+    }
+
+    const data = {
+      photoUrl: '',
+    };
+
+    if (file) {
+      const imageUrl = await this.cloudinaryService.uploadImage(
+        file,
+        'user_images',
+      );
+      data.photoUrl = imageUrl;
+    }
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data,
+    });
     return user;
   }
 }

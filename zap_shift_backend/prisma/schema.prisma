@@ -73,6 +73,7 @@ model User {
   isActive Boolean @default(true)
 
   riderProfile RiderProfile?
+  riderApplication RiderApplication?
 
   // parcels created by this user (sender)
   sentParcels    Parcel[]        @relation("SenderParcels")
@@ -89,6 +90,36 @@ model User {
 
   @@index([email, role, isActive, name])
 }
+
+model RiderApplication {
+  id Int @id @default(autoincrement())
+  fullName String
+  email String
+  phone String
+  regionId Int?
+  districtId Int?
+  nidNumber String @unique
+  drivingLicenseNumber String @unique
+  bikeBrandModelYear String
+  bikeRegistrationNumber String @unique
+  note String?
+  status RiderStatus @default(PENDING)
+
+  userId Int? @unique
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+approvedById Int?
+  approvedAt DateTime?
+  rejectedAt DateTime?
+
+ createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+}
+
 
 model RiderProfile {
   id     Int         @id @default(autoincrement())
