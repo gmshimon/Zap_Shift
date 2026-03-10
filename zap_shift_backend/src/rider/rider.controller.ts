@@ -12,9 +12,9 @@ import {
 import { RiderService } from './rider.service';
 
 import { response, type Request, type Response } from 'express';
-import { CreateRiderApplicationDto } from './dto/create-rider-application.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@prisma/client';
+import { User, RiderStatus } from '@prisma/client';
+import { CreateRiderApplicationDto } from './dto/create-rider-application.dto';
 @Controller('rider')
 export class RiderController {
   constructor(private readonly riderService: RiderService) {}
@@ -73,7 +73,7 @@ export class RiderController {
   async updateRiderApplicationStatus(
     @Req() request: Request,
     @Res() response: Response,
-    @Body() data: { status: string },
+    @Body() data: { status: RiderStatus },
   ) {
     try {
       const user = (request as Request & { user?: User }).user;

@@ -1,13 +1,17 @@
-import { RiderApplication } from './../../node_modules/.prisma/client/index.d';
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Injectable } from '@nestjs/common';
+import { RiderStatus } from '@prisma/client';
 import { CreateRiderApplicationDto } from './dto/create-rider-application.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NotificationService } from 'src/notification/notification.service';
-import { riderRejectedEmailTemplate } from 'src/notification/email-template';
+import {
+  riderAccountCreatedEmailTemplate,
+  riderRejectedEmailTemplate,
+} from 'src/notification/email-template';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class RiderService {
@@ -16,6 +20,7 @@ export class RiderService {
     private readonly notificationService: NotificationService,
   ) {}
 
+  // Function to approve rider application
   async approveRiderApplication(application: any) {
     if (application.status !== 'APPROVED') {
       throw new Error('Only approved applications can be processed');
@@ -28,14 +33,27 @@ export class RiderService {
 
       if (!user) {
         const newPass = Math.random().toString(36).slice(-8);
-        const newUser = await tsx.user.create({
+        const hashedPassword = await bcrypt.hash(newPass, 10);
+        user = await tsx.user.create({
           data: {
             name: application.fullName,
             email: application.email,
-            password: newPass,
+            password: hashedPassword,
             role: 'RIDER',
             isActive: true,
           },
+        });
+
+        // Send approval email to the applicant with login credentials
+        await this.notificationService.sendEmail({
+          to: application.email,
+          subject: 'Your ZapShift Rider Application Has Been Approved',
+          html: riderAccountCreatedEmailTemplate({
+            name: application.fullName,
+            email: application.email,
+            temporaryPassword: newPass,
+            loginUrl: 'https://app.zapshift.com/login',
+          }),
         });
       } else {
         user = await tsx.user.update({
@@ -53,7 +71,7 @@ export class RiderService {
           id: application.id,
         },
         data: {
-          userId: user ? user.id : null,
+          userId: user.id,
           status: 'APPROVED',
           approvedAt: new Date(),
           rejectedAt: null,
@@ -73,7 +91,6 @@ export class RiderService {
         riderProfile = await tsx.riderProfile.create({
           data: {
             userId: user.id,
-            applicationId: application.id,
             status: 'APPROVED',
           },
         });
@@ -100,6 +117,7 @@ export class RiderService {
     return result;
   }
 
+  // Function to reject rider application
   async rejectRiderApplication(application: any) {
     if (application.status !== 'REJECTED') {
       throw new Error('Only rejected applications can be deleted');
@@ -137,17 +155,20 @@ export class RiderService {
         });
       }
 
-      const existingRiderProfile = await tsx.riderProfile.findUnique({
-        where: { applicationId: application.id },
-      });
+      const existingRiderProfile =
+        application.userId != null
+          ? await tsx.riderProfile.findUnique({
+              where: { userId: application.userId },
+            })
+          : null;
 
-      if (existingRiderProfile) {
+      if (existingRiderProfile && application.userId) {
         await tsx.riderProfile.update({
           where: {
             userId: application.userId,
           },
           data: {
-            status: RiderStatus.REJECTED,
+            status: 'REJECTED',
           },
         });
       }
@@ -159,6 +180,7 @@ export class RiderService {
     return result;
   }
 
+  // service function to create rider application
   async createRiderApplication(
     createRiderApplicationDto: CreateRiderApplicationDto,
   ) {
@@ -206,6 +228,7 @@ export class RiderService {
     return application;
   }
 
+  // service function to get all rider applications
   async getRiderApplications() {
     return await this.prisma.riderApplication.findMany({
       orderBy: {
@@ -214,7 +237,8 @@ export class RiderService {
     });
   }
 
-  async updateRiderApplicationStatus(id: number, status: string) {
+  // service function to update rider application status
+  async updateRiderApplicationStatus(id: number, status: RiderStatus) {
     const application = await this.prisma.riderApplication.findUnique({
       where: { id },
       include: {
@@ -226,8 +250,11 @@ export class RiderService {
       throw new Error('Rider application not found');
     }
 
-    if (status === RiderApplication.status.APPROVED) {
+    if (status === 'APPROVED') {
       return this.approveRiderApplication(application);
+    }
+    if (status === 'REJECTED') {
+      return this.rejectRiderApplication(application);
     }
   }
 }
