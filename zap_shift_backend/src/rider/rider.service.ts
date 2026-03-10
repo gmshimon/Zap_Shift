@@ -21,7 +21,7 @@ export class RiderService {
   ) {}
 
   // Function to approve rider application
-  async approveRiderApplication(application: any) {
+  async approveRiderApplication(application: any, adminId: number) {
     if (application.status !== 'APPROVED') {
       throw new Error('Only approved applications can be processed');
     }
@@ -72,6 +72,7 @@ export class RiderService {
         },
         data: {
           userId: user.id,
+          approvedById: adminId,
           status: 'APPROVED',
           approvedAt: new Date(),
           rejectedAt: null,
@@ -238,7 +239,11 @@ export class RiderService {
   }
 
   // service function to update rider application status
-  async updateRiderApplicationStatus(id: number, status: RiderStatus) {
+  async updateRiderApplicationStatus(
+    adminId: number,
+    id: number,
+    status: RiderStatus,
+  ) {
     const application = await this.prisma.riderApplication.findUnique({
       where: { id },
       include: {
@@ -251,7 +256,7 @@ export class RiderService {
     }
 
     if (status === 'APPROVED') {
-      return this.approveRiderApplication(application);
+      return this.approveRiderApplication(application, adminId);
     }
     if (status === 'REJECTED') {
       return this.rejectRiderApplication(application);

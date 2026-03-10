@@ -86,7 +86,8 @@ export class RiderController {
       }
 
       // Implement the logic to update the rider application status here
-      const result = await this.riderService.updateRiderApplicationStatus(
+      await this.riderService.updateRiderApplicationStatus(
+        user.id,
         Number(request.params.id),
         data.status,
       );
