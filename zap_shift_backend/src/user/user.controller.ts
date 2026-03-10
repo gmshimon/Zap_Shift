@@ -108,7 +108,6 @@ export class UserController {
   @Put('/update-image')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file', multerOptions))
-
   async updateUserImage(
     @Req() request: Request,
     @Res() response: Response,
@@ -121,9 +120,7 @@ export class UserController {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const result = await this.userService.updateUserImage(
-        user.id, file,
-      );
+      const result = await this.userService.updateUserImage(user.id, file);
 
       return response.status(200).json({
         message: 'User image updated successfully',

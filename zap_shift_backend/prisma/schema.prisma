@@ -72,7 +72,7 @@ model User {
   role     Role    @default(USER)
   isActive Boolean @default(true)
 
-  riderProfile RiderProfile?
+  riderProfile     RiderProfile?
   riderApplication RiderApplication?
 
   // parcels created by this user (sender)
@@ -92,34 +92,33 @@ model User {
 }
 
 model RiderApplication {
-  id Int @id @default(autoincrement())
-  fullName String
-  email String
-  phone String
-  regionId Int?
-  districtId Int?
-  nidNumber String @unique
-  drivingLicenseNumber String @unique
-  bikeBrandModelYear String
-  bikeRegistrationNumber String @unique
-  note String?
-  status RiderStatus @default(PENDING)
+  id                     Int         @id @default(autoincrement())
+  fullName               String
+  email                  String
+  phone                  String
+  region               String?
+  district             String?
+  nidNumber              String      @unique
+  drivingLicenseNumber   String      @unique
+  bikeBrandModelYear     String
+  bikeRegistrationNumber String      @unique
+  note                   String?
+  status                 RiderStatus @default(PENDING)
 
-  userId Int? @unique
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-approvedById Int?
-  approvedAt DateTime?
-  rejectedAt DateTime?
+  approvedById Int?
+  approvedAt   DateTime?
+  rejectedAt   DateTime?
 
- createdAt DateTime @default(now())
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([email])
   @@index([phone])
   @@index([status])
 }
-
 
 model RiderProfile {
   id     Int         @id @default(autoincrement())
@@ -180,7 +179,7 @@ model Parcel {
   id       Int          @id @default(autoincrement())
   title    String
   type     Parcel_type  @default(NON_DOCUMENT)
-  weightKg Float @default(0)
+  weightKg Float        @default(0)
   cost     Float
   status   ParcelStatus @default(UNPAID)
 
