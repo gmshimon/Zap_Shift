@@ -1,26 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
-
+import { MailerService } from '@nestjs-modules/mailer';
+interface EmailOptions {
+  to: string;
+  subject?: string;
+  html: string;
+}
 @Injectable()
 export class NotificationService {
-  create(createNotificationDto: CreateNotificationDto) {
-    return 'This action adds a new notification';
-  }
+  constructor(private readonly mailerService: MailerService) {}
 
-  findAll() {
-    return `This action returns all notification`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
-  }
-
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+  async sendEmail({ to, subject = 'Test Subject', html }: EmailOptions) {
+    await this.mailerService.sendMail({
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      html,
+      text: html,
+    });
   }
 }

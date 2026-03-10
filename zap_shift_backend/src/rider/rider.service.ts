@@ -6,25 +6,99 @@ import { RiderApplication } from './../../node_modules/.prisma/client/index.d';
 import { Injectable } from '@nestjs/common';
 import { CreateRiderApplicationDto } from './dto/create-rider-application.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NotificationService } from 'src/notification/notification.service';
+import { riderRejectedEmailTemplate } from 'src/notification/email-template';
 
 @Injectable()
 export class RiderService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
-async approveRiderApplication(application: any) {
-  if(application.status !== 'APPROVED') {
-    throw new Error('Only approved applications can be processed');
-  }
+  async approveRiderApplication(application: any) {
+    if (application.status !== 'APPROVED') {
+      throw new Error('Only approved applications can be processed');
+    }
 
-  const result = await this.prisma.$transaction(async (tsx)=>{
-    const user = await tsx.user.findUnique({
+    const result = await this.prisma.$transaction(async (tsx) => {
+      let user = await tsx.user.findUnique({
+        where: { email: application.email },
+      });
+
+      if (!user) {
+        const newPass = Math.random().toString(36).slice(-8);
+        const newUser = await tsx.user.create({
+          data: {
+            name: application.fullName,
+            email: application.email,
+            password: newPass,
+            role: 'RIDER',
+            isActive: true,
+          },
+        });
+      } else {
+        user = await tsx.user.update({
           where: { email: application.email },
-        })
-    
+          data: {
+            role: 'RIDER',
+            isActive: true,
+          },
+        });
+      }
 
+      // update the application with linked user + approved status
+      const updateApplication = await tsx.riderApplication.update({
+        where: {
+          id: application.id,
+        },
+        data: {
+          userId: user ? user.id : null,
+          status: 'APPROVED',
+          approvedAt: new Date(),
+          rejectedAt: null,
+        },
+      });
 
-  })
-}
+      // create rider profile if not exists
+      const existingRiderProfile = await tsx.riderProfile.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      let riderProfile = existingRiderProfile;
+
+      if (!existingRiderProfile) {
+        riderProfile = await tsx.riderProfile.create({
+          data: {
+            userId: user.id,
+            applicationId: application.id,
+            status: 'APPROVED',
+          },
+        });
+      } else {
+        riderProfile = await tsx.riderProfile.update({
+          where: {
+            userId: user.id,
+          },
+          data: {
+            status: 'APPROVED',
+          },
+        });
+      }
+
+      return {
+        message: 'Rider application approved successfully',
+        data: {
+          application: updateApplication,
+          user,
+          riderProfile,
+        },
+      };
+    });
+    return result;
+  }
 
   async rejectRiderApplication(application: any) {
     if (application.status !== 'REJECTED') {
@@ -41,13 +115,24 @@ async approveRiderApplication(application: any) {
         },
       });
 
-      // if application already linked to a user and rider profile exists
+      // Send rejection email to the applicant
+      if (application.email) {
+        await this.notificationService.sendEmail({
+          to: application.email,
+          subject: 'Update on Your ZapShift Rider Application',
+          html: riderRejectedEmailTemplate({
+            name: application.fullName,
+            supportEmail: 'support@zapshift.com',
+          }),
+        });
+      }
 
+      // if application already linked to a user and rider profile exists
       if (application.userId) {
         await tsx.user.update({
           where: { id: application.userId },
           data: {
-            role: "USER",
+            role: 'USER',
           },
         });
       }
