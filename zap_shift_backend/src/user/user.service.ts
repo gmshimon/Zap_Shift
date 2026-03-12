@@ -8,6 +8,10 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { createHash, randomBytes } from 'crypto';
+import { forgotPasswordEmailTemplate } from './forgot-password-email.template';
+import { NotificationService } from 'src/notification/notification.service';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class UserService {
@@ -15,6 +19,7 @@ export class UserService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async register(registerData: RegisterDto): Promise<any> {
@@ -127,5 +132,93 @@ export class UserService {
       data,
     });
     return user;
+  }
+
+  async forgotPassword(email: string): Promise<any> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.trim().toLowerCase() },
+    });
+
+    if (!user) return;
+
+    await this.prisma.passwordResetToken.deleteMany({
+      where: { userId: user.id },
+    });
+
+    const rawToken = randomBytes(32).toString('hex');
+    const tokenHash = createHash('sha256').update(rawToken).digest('hex');
+
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Token expires in 30 mins
+
+    await this.prisma.passwordResetToken.create({
+      data: {
+        tokenHash,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${rawToken}`;
+
+    const html = forgotPasswordEmailTemplate({
+      name: user.name,
+      resetUrl,
+      expiryMinutes: 30,
+    });
+
+    await this.notificationService.sendEmail({
+      to: user.email,
+      subject: 'ZapShift Password Reset Request',
+      html,
+    });
+  }
+
+  async resetPassword(data: ResetPasswordDto) {
+    const { token, newPassword } = data;
+
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+
+    const passwordResetToken = await this.prisma.passwordResetToken.findUnique({
+      where: { tokenHash: tokenHash },
+      include: { user: true },
+    });
+
+    if (!passwordResetToken) {
+      throw new NotFoundException('Invalid or expired password reset token');
+    }
+
+    if (passwordResetToken.usedAt) {
+      throw new NotFoundException(
+        'This password reset token has already been used',
+      );
+    }
+
+    if (passwordResetToken.expiresAt < new Date()) {
+      throw new NotFoundException('Invalid or expired password reset token');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.$transaction(async (tsx) => {
+      await tsx.user.update({
+        where: { id: passwordResetToken.userId },
+        data: { password: hashedPassword },
+      });
+
+      await tsx.passwordResetToken.update({
+        where: { id: passwordResetToken.id },
+        data: { usedAt: new Date() },
+      });
+
+      await tsx.passwordResetToken.deleteMany({
+        where: {
+          userId: passwordResetToken.userId,
+          usedAt: null,
+          id: {
+            not: passwordResetToken.id,
+          },
+        },
+      });
+    });
   }
 }

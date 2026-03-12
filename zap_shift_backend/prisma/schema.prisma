@@ -75,6 +75,8 @@ model User {
   riderProfile     RiderProfile?
   riderApplication RiderApplication?
 
+  passwordResetTokens PasswordResetToken[]
+
   // parcels created by this user (sender)
   sentParcels    Parcel[]        @relation("SenderParcels")
   payments       Payment[]
@@ -91,13 +93,26 @@ model User {
   @@index([email, role, isActive, name])
 }
 
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
 model RiderApplication {
   id                     Int         @id @default(autoincrement())
   fullName               String
   email                  String
   phone                  String
-  region               String?
-  district             String?
+  region                 String?
+  district               String?
   nidNumber              String      @unique
   drivingLicenseNumber   String      @unique
   bikeBrandModelYear     String

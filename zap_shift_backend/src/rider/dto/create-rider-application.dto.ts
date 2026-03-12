@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsEmail,
-  IsNumber,
-  IsOptional,
-  isString,
-} from 'class-validator';
+import { IsString, IsEmail, IsOptional } from 'class-validator';
 
 export class CreateRiderApplicationDto {
   @IsString()
@@ -17,12 +11,12 @@ export class CreateRiderApplicationDto {
   phone: string;
 
   @IsOptional()
-  @IsNumber()
-  regionId?: number;
+  @IsString()
+  region?: string;
 
   @IsOptional()
-  @IsNumber()
-  districtId?: number;
+  @IsString()
+  district?: string;
 
   @IsString()
   nidNumber: string;

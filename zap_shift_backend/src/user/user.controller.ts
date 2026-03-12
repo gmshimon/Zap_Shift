@@ -20,6 +20,7 @@ import { User } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
 import { multerOptions } from 'src/upload/multer-options';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 type AuthenticatedUser = {
   id: number;
   email: string;
@@ -129,6 +130,44 @@ export class UserController {
       });
     } catch (error) {
       console.log(error);
+      return response.status(500).json({
+        status: 'Error!',
+        message: 'Internal Server Error!',
+      });
+    }
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Body() data: { email: string },
+  ) {
+    try {
+      await this.userService.forgotPassword(data.email);
+      return response.status(200).json({
+        message: 'Password reset email sent successfully',
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: 'Error!',
+        message: 'Internal Server Error!',
+      });
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Body() data: ResetPasswordDto,
+  ) {
+    try {
+      await this.userService.resetPassword(data);
+      return response.status(200).json({
+        message: 'Password reset successfully',
+      });
+    } catch (error) {
       return response.status(500).json({
         status: 'Error!',
         message: 'Internal Server Error!',

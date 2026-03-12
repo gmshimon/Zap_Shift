@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
       signOptions: { expiresIn: '7d' },
     }),
     CloudinaryModule,
+    NotificationModule,
   ],
   controllers: [UserController],
   providers: [UserService, JwtStrategy],
